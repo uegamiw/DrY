@@ -1,0 +1,65 @@
+name: Build Windows
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install nuitka pandas openpyxl
+
+      - name: Resolve version from tag
+        id: version
+        shell: bash
+        run: |
+          tag="${GITHUB_REF_NAME}"
+          version="${tag#v}"
+          # Nuitka requires a numeric x.y.z product version
+          numeric="$(echo "$version" | grep -oE '^[0-9]+(\.[0-9]+){0,3}')"
+          [ -z "$numeric" ] && numeric="0.0.0"
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          echo "numeric=$numeric" >> "$GITHUB_OUTPUT"
+
+      - name: Build with Nuitka
+        run: >
+          python -m nuitka
+          --lto=no
+          --standalone
+          --onefile
+          --assume-yes-for-downloads
+          --output-filename=DrY.exe
+          --windows-product-name=DrY
+          --windows-file-description="Billing system for outside cases"
+          --windows-product-version=${{ steps.version.outputs.numeric }}
+          --windows-company-name="KMC"
+          --windows-icon-from-ico=icon.png
+          main.py
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: DrY-${{ steps.version.outputs.tag }}
+          path: DrY.exe
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: DrY.exe
