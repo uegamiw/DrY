@@ -50,7 +50,7 @@ jobs:
           --windows-file-description="Billing system for outside cases"
           --windows-product-version=${{ steps.version.outputs.numeric }}
           --windows-company-name="KMC"
-          --windows-icon-from-ico=icon.png
+          --windows-icon-from-ico=icon.ico
           main.py
 
       - name: Upload build artifact

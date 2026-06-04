@@ -14,7 +14,7 @@ git push origin v0.0.1
 ## 手動ビルド例
 
 ```
-python -m nuitka  --lto=no --standalone --onefile --output-filename=DrY.exe --windows-product-name=DrY --windows-file-description="Billing system for outside cases" --windows-product-version=0.0.1 --windows-company-name="KMC" --windows-icon-from-ico=icon.png main.py
+python -m nuitka  --lto=no --standalone --onefile --output-filename=DrY.exe --windows-product-name=DrY --windows-file-description="Billing system for outside cases" --windows-product-version=0.0.1 --windows-company-name="KMC" --windows-icon-from-ico=icon.ico main.py
 ```
 
 # 使い方
